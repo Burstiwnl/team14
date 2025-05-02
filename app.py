@@ -141,13 +141,17 @@ def delete_user(user_id):
 # ----------------------------
 # Description: Returns a list of users who have the specified tag.
 @app.route("/tags/<int:tag_id>/users/", methods=["GET"])
+@app.route("/tags/<int:tag_id>/users/", methods=["GET"])
 def get_users_from_tag(tag_id):
     tag = Tag.query.filter_by(id = tag_id).first()
     if not tag:
         return failure_response("Tag not found")
-    users = [user.serialize() for user in tag.users]
+    if tag.users < 4:
+        users = [user.serialize() for user in tag.users]
+        return success_response(users)
+    selected_users = random.sample(tag.users, 4)
+    users = [user.serialize() for user in selected_users]
     return success_response(users)
-
 # Get User by ID
 # ----------------------------
 # Description: Returns the user and their associated tags by user ID.
